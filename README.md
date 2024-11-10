@@ -1,2 +1,3 @@
 # steppe
-tauri-based terminal emulator with a focus on customizability and usability
+
+tauri + xterm powered terminal emulator focused on being customizable and pretty!
