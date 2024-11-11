@@ -30,6 +30,9 @@ also like my terminal to be practical. theres a few things i would like to add t
 
 ### niceties
 
+- import vscode themes
+- js-based repl integrated with the terminal context (some kind of terminal shortcut to spawn a repl that integrates with the current terminal context, like emacs)
+    - arbitrary npm support?
 - window vibrancy (blurred, translucent background!)
 - terminal pets and general display niceities
 - confetti
