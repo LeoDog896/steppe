@@ -22,6 +22,7 @@ also like my terminal to be practical. theres a few things i would like to add t
 
 ### necessities
 
+- refactor, comment, and clean up codebase: *i want this terminal to be modifiable at source*. plugins would be nice too!
 - choose launch shell
 - terminal tabs
 - terminator-like pane splitting
