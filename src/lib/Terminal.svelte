@@ -61,6 +61,9 @@
             },
         });
 
+        // TODO: simple inspect-element helper terminal api!
+        (window as any)["terminal"] = term;
+
         fitAddon = new FitAddon();
         imageAddon = new ImageAddon();
         clipboardAddon = new ClipboardAddon();
