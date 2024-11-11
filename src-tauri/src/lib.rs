@@ -21,7 +21,6 @@ struct AppState {
 }
 
 #[tauri::command]
-// create a shell and add to it the $TERM env variable so we can use clear and other commands
 async fn async_create_shell(state: State<'_, AppState>) -> Result<(), String> {
     if state.has_terminal.load(Ordering::Acquire) {
         return Ok(());
@@ -31,9 +30,12 @@ async fn async_create_shell(state: State<'_, AppState>) -> Result<(), String> {
     let mut cmd = CommandBuilder::new("powershell.exe");
 
     #[cfg(not(target_os = "windows"))]
-    let mut cmd = CommandBuilder::new("fish");
+    let mut cmd = {
+        let path = std::env::var("SHELL").map_err(|_| "Could not grab preferred shell from $SHELL")?;
+        CommandBuilder::new(path)
+    };
 
-    // add the $TERM env variable so we can use clear and other commands
+    // add the $TERM env variable
 
     #[cfg(target_os = "windows")]
     cmd.env("TERM", "cygwin");
@@ -121,7 +123,6 @@ pub fn run() {
 
     tauri::Builder::default()
         .plugin(tauri_plugin_clipboard_manager::init())
-        .plugin(tauri_plugin_shell::init())
         .manage(AppState {
             pty_pair: Arc::new(AsyncMutex::new(pty_pair)),
             writer: Arc::new(AsyncMutex::new(writer)),

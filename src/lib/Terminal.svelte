@@ -17,7 +17,7 @@
 
     async function fitTerminal() {
         fitAddon.fit();
-        void invoke<string>("async_resize_pty", {
+        invoke<string>("async_resize_pty", {
             rows: term.rows,
             cols: term.cols,
         });
@@ -75,7 +75,7 @@
         fitAddon.fit();
 
         invoke("async_create_shell").catch((error: unknown) => {
-            // on linux it seem to to "Operation not permitted (os error 1)" but it still works because echo $SHELL give /bin/bash
+            // on linux it seem to to "Operation not permitted (os error 1)", yet it still works.
             console.error("Error creating shell:", error);
         });
 

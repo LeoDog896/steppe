@@ -1,8 +1,8 @@
 [package]
 name = "steppe"
 version = "0.1.0"
-description = "A Tauri App"
-authors = ["you"]
+description = "silly web-based terminal emulator"
+authors = ["LeoDog896"]
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -18,10 +18,9 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 tauri-build = { version = "2", features = [] }
 
 [dependencies]
-tauri = { version = "2", features = [] }
-tauri-plugin-shell = "2"
+tauri = { version = "2.1.1", features = [] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 portable-pty = "0.8.1"
 tauri-plugin-clipboard-manager = "2.0.2"
-
+deno_runtime = { path = "../deno/runtime" }
