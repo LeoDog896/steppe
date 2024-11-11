@@ -4,5 +4,3 @@
 
 <Terminal />
 
-<style>
-</style>

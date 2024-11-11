@@ -4,7 +4,7 @@ use portable_pty::{native_pty_system, CommandBuilder, PtyPair, PtySize};
 use std::{
     io::{BufRead, BufReader, Read, Write},
     process::exit,
-    sync::Arc,
+    sync::{atomic::{AtomicBool, Ordering}, Arc},
     thread::{self},
 };
 
@@ -14,11 +14,16 @@ struct AppState {
     pty_pair: Arc<AsyncMutex<PtyPair>>,
     writer: Arc<AsyncMutex<Box<dyn Write + Send>>>,
     reader: Arc<AsyncMutex<BufReader<Box<dyn Read + Send>>>>,
+    has_terminal: AtomicBool
 }
 
 #[tauri::command]
 // create a shell and add to it the $TERM env variable so we can use clear and other commands
 async fn async_create_shell(state: State<'_, AppState>) -> Result<(), String> {
+    if state.has_terminal.load(Ordering::Acquire) {
+        return Ok(())
+    }
+
     #[cfg(target_os = "windows")]
     let mut cmd = CommandBuilder::new("powershell.exe");
 
@@ -45,6 +50,9 @@ async fn async_create_shell(state: State<'_, AppState>) -> Result<(), String> {
         let status = child.wait().unwrap();
         exit(status.exit_code() as i32)
     });
+
+    state.has_terminal.store(true, Ordering::Release);
+
     Ok(())
 }
 
@@ -114,6 +122,7 @@ pub fn run() {
             pty_pair: Arc::new(AsyncMutex::new(pty_pair)),
             writer: Arc::new(AsyncMutex::new(writer)),
             reader: Arc::new(AsyncMutex::new(BufReader::new(reader))),
+            has_terminal: AtomicBool::new(false)
         })
         .invoke_handler(tauri::generate_handler![
             async_write_to_pty,
