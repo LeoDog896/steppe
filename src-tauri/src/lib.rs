@@ -4,7 +4,10 @@ use portable_pty::{native_pty_system, CommandBuilder, PtyPair, PtySize};
 use std::{
     io::{BufRead, BufReader, Read, Write},
     process::exit,
-    sync::{atomic::{AtomicBool, Ordering}, Arc},
+    sync::{
+        atomic::{AtomicBool, Ordering},
+        Arc,
+    },
     thread::{self},
 };
 
@@ -14,14 +17,14 @@ struct AppState {
     pty_pair: Arc<AsyncMutex<PtyPair>>,
     writer: Arc<AsyncMutex<Box<dyn Write + Send>>>,
     reader: Arc<AsyncMutex<BufReader<Box<dyn Read + Send>>>>,
-    has_terminal: AtomicBool
+    has_terminal: AtomicBool,
 }
 
 #[tauri::command]
 // create a shell and add to it the $TERM env variable so we can use clear and other commands
 async fn async_create_shell(state: State<'_, AppState>) -> Result<(), String> {
     if state.has_terminal.load(Ordering::Acquire) {
-        return Ok(())
+        return Ok(());
     }
 
     #[cfg(target_os = "windows")]
@@ -115,14 +118,15 @@ pub fn run() {
 
     let reader = pty_pair.master.try_clone_reader().unwrap();
     let writer = pty_pair.master.take_writer().unwrap();
-    
+
     tauri::Builder::default()
+        .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_shell::init())
         .manage(AppState {
             pty_pair: Arc::new(AsyncMutex::new(pty_pair)),
             writer: Arc::new(AsyncMutex::new(writer)),
             reader: Arc::new(AsyncMutex::new(BufReader::new(reader))),
-            has_terminal: AtomicBool::new(false)
+            has_terminal: AtomicBool::new(false),
         })
         .invoke_handler(tauri::generate_handler![
             async_write_to_pty,

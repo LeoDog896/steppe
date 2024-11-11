@@ -3,6 +3,7 @@
     import { Terminal } from '@xterm/xterm'
     import { FitAddon } from '@xterm/addon-fit';
     import { ImageAddon } from '@xterm/addon-image';
+    import { ClipboardAddon } from './ClipboardAddon';
     import { invoke } from "@tauri-apps/api/core";
     import FontFaceObserver from 'fontfaceobserver'
     import '@fontsource-variable/jetbrains-mono';
@@ -11,6 +12,8 @@
 
     let term: Terminal
     let fitAddon: FitAddon
+    let imageAddon: ImageAddon
+    let clipboardAddon: ClipboardAddon
 
     async function fitTerminal() {
         fitAddon.fit();
@@ -59,10 +62,12 @@
         });
 
         fitAddon = new FitAddon();
-        const imageAddon = new ImageAddon();
+        imageAddon = new ImageAddon();
+        clipboardAddon = new ClipboardAddon();
 
         term.loadAddon(fitAddon);
-        term.loadAddon(imageAddon)
+        term.loadAddon(imageAddon);
+        term.loadAddon(clipboardAddon);
 
         term.open(terminalElement);
         term.onData(writeToPty);
@@ -75,10 +80,13 @@
         });
 
         window.requestAnimationFrame(readFromPty);
+    })
 
-        onDestroy(() => {
-            term.dispose()
-        })
+    onDestroy(() => {
+        fitAddon.dispose()
+        imageAddon.dispose()
+        clipboardAddon.dispose()
+        term.dispose()
     })
 </script>
 
