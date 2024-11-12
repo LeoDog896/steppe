@@ -17,6 +17,18 @@ export class ClipboardAddon implements ITerminalAddon {
   public activate(terminal: Terminal): void {
     this._terminal = terminal;
     this._disposable = terminal.parser.registerOscHandler(52, data => this._setOrReportClipboard(data));
+
+    // https://github.com/xtermjs/xterm.js/issues/2478#issuecomment-1002371588
+    terminal.attachCustomKeyEventHandler((arg) => { 
+      if (arg.ctrlKey && arg.shiftKey && arg.code === "KeyC" && arg.type === "keydown") {
+        const selection = terminal.getSelection();
+        if (selection) {
+          writeText(selection);
+          return false;
+        }
+      }
+      return true;
+    }); 
   }
 
   public dispose(): void {
