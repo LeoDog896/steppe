@@ -6,5 +6,5 @@ body, html {
 }
 
 .xterm {
-    height: 100vh;
+    height: calc(100vh - 2rem);
 }

@@ -99,11 +99,13 @@
 
 <svelte:window on:resize={fitTerminal}></svelte:window>
 
-<div bind:this={terminalElement}></div>
+<div class="terminalWrap">
+    <div bind:this={terminalElement}></div>
+</div>
 
 <style>
     div {
-        width: 100vw;
-        height: 100vh;
+        width: 100%;
+        height: calc(100vh - 2rem);
     }
 </style>
