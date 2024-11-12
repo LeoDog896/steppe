@@ -61,8 +61,12 @@
             },
         });
 
-        // TODO: simple inspect-element helper terminal api!
-        (window as any)["terminal"] = term;
+        (window as any)["api"] = {
+            terminalObject: term,
+            write(message: string) {
+                writeToPty(message)
+            }
+        };
 
         fitAddon = new FitAddon();
         imageAddon = new ImageAddon();
